@@ -177,7 +177,8 @@ class opts(object):
         # ORIG: when there exist only two modalities
         #opt.save_dir = opt.rgb_model if opt.rgb_model != '' else opt.flow_model
         if opt.rgb_model != '':
-            opt.save_dir = opt.rgb_model
+            #opt.save_dir = opt.rgb_model
+            opt.save_dir = opt.save_root + opt.rgb_model
         elif opt.flow_model != '':
             opt.save_dir = opt.flow_model
         else:
