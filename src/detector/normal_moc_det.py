@@ -48,7 +48,7 @@ class MOCDetector(object):
         if opt.rgb_model != '':
             print('create rgb model')
             self.rgb_model = create_model(opt.arch, opt.branch_info, opt.head_conv, opt.K, flip_test=opt.flip_test, is_pa=False)
-            self.rgb_model = load_model(self.rgb_model, opt.rgb_model)
+            self.rgb_model = load_model(self.rgb_model, opt.save_root + opt.rgb_model)
             
             '''
             # ADDED: debug param weights
