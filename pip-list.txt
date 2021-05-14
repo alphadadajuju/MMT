@@ -4,7 +4,7 @@ tensorflow
 
 tensorboardX
 
-pickle
+#pickle
 
 progress
 
