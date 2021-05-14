@@ -32,12 +32,13 @@ class MOC_Net(nn.Module):
         if self.is_pa:
             self.pa = PA(n_length=5)
         
-        if self.pa_fuse_mode == 'TDN':
-            self.backbone = backbone['tdn_resnet'](num_layers, rgb_w3)
+            if self.pa_fuse_mode == 'TDN':
+                self.backbone = backbone['tdn_resnet'](num_layers, rgb_w3)
             
-        elif self.pa_fuse_mode == '':
+            # else: other pa fusion method here
+        else:
             self.backbone = backbone[arch](num_layers)
-        
+            
         self.deconv_layer = deconv_layers(inplanes=512, BN_MOMENTUM=0.1)
         self.init_weights()
         

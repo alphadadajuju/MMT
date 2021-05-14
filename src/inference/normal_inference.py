@@ -83,7 +83,7 @@ class PrefetchDataset(torch.utils.data.Dataset):
                     self.indices += [(v, i)]
             
             elif self.opt.rgb_model != '':
-                for i in range(min(self.opt.K * self.opt.ninputrgb , self.nframes[v]) - self.opt.ninputrgb + 1 , 1 + self.nframes[v]): # start: self.opt.K ||+ (self.opt.ninput - 1)
+                for i in range(min(self.opt.K * self.opt.ninputrgb , self.nframes[v]) - self.opt.ninputrgb + 1, 1 + self.nframes[v]): # start: self.opt.K ||+ (self.opt.ninput - 1)
                     if not os.path.exists(self.outfile(v, i)):
                         self.indices += [(v, i)]
         
@@ -111,57 +111,7 @@ class PrefetchDataset(torch.utils.data.Dataset):
             # ORIG: MOC clip
             #images = [cv2.imread(self.imagefile(v, frame + i)).astype(np.float32) for i in range(self.opt.K)]
             #images = self.pre_process_func(images)
-            
-            '''
-            # dense reverse
-            for i in range(self.opt.K):
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-            '''
-            
-            
-            
-            '''
-            # MOD2: simply enlarge gap from 1 to n (e.g., fixed 2, 3, 4?)
-            n_mem =  self.n_mem
-            im_inds = []
-            
-            for i in range(self.opt.K-n_mem): # K = clip length + 2(?)
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-                #print ('frame id: {}'.format(frame - i))
-            
-            for j in reversed(range(1, n_mem+1)):
-                ff = np.maximum(1, im_inds[-1] + 1 - 2) # 2 is the gap
-                images.append(cv2.imread(self.imagefile(v, ff )).astype(np.float32))
-                im_inds.append(ff-1)
-            
-            images.reverse() # time order: small to large
-            im_inds.reverse()
-            '''
-            
-            
-            
-            '''
-            #final working SPARSE version
-            # MOD: to enable long-range modeling
-            n_mem =  self.n_mem
-            im_inds = []
-            for _ in range(1):
-                images.append(cv2.imread(self.imagefile(v, frame)).astype(np.float32))
-                im_inds.append(frame - 1)
-                #print ('frame id: {}'.format(frame - i))
-            
-            clip_lo = frame
-            mem_base = clip_lo // (n_mem+1) 
-            
-            for j in reversed(range(1, n_mem+1)):
-                
-                images.append(cv2.imread(self.imagefile(v, max(1, mem_base * j))).astype(np.float32))
-                im_inds.append(max(0, mem_base * j - 1))
-                #print ('frame id: {}'.format(clip_lo // (n_mem+1) * j))
-            '''
-            
+        
             n_mem =  self.n_mem
             im_inds = []
             for _ in range(1): 

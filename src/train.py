@@ -191,7 +191,7 @@ def main(opt):
     
     # added: to ensure no decrease of lr too early (for jh s1?)
     if stop_step == 0:
-        drop_early_flag = True # should be False if wanting more reproducible results  (e.g., jh s1)
+        drop_early_flag = False # should be False if wanting more reproducible results  (e.g., jh s1)
     else: 
         drop_early_flag = True
         

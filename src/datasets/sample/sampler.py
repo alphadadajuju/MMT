@@ -60,40 +60,6 @@ class Sampler(data.Dataset):
             im_inds_flow.reverse()
             #print (im_inds)
             
-           
-            
-            '''
-            # For sparse clip
-            images = []
-            n_mem = K - 1
-            im_inds = []
-            for _ in range(1): 
-                im_inds.append(frame - 1)
-                
-            
-            cur_f = frame
-            #low_bound = np.maximum(cur_f - 30, 1)
-            low_bound = 1
-            for _ in range(1, n_mem+1):
-                lookback = random.randint(1, (cur_f - low_bound) // (n_mem // 2) + 1)
-                cur_f = np.maximum(cur_f - lookback, 1)
-                im_inds.append(cur_f - 1)
-            
-            # debug
-            im_inds_flow = []
-            for idx, i in enumerate(im_inds):
-                for ii in range(self._ninput):
-                    img_id = max(i + 1 - ii, 1)
-                    
-                    images.append(cv2.imread(self.imagefile(v, img_id)).astype(np.float32))
-                    im_inds_flow.append(img_id - 1)
-            
-            im_inds.reverse()
-            images.reverse() # time order: small to large; not needed if im_inds have been reversed already?
-            im_inds_flow.reverse()
-            #print (im_inds_flow)
-            '''
-            
             
         elif self._ninput > 1 and self.opt.flow_model != '':
             # ORIG
@@ -154,81 +120,6 @@ class Sampler(data.Dataset):
             # orig
             #images = [cv2.imread(self.imagefile(v, frame + i)).astype(np.float32) for i in range(K)]
             
-            '''
-            # reverse dense
-            images = []
-            im_inds = []
-            for i in range(K):
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-            
-            images.reverse() # time order: small to large
-            im_inds.reverse()
-            '''
-            '''
-            # MOD2: simply enlarge gap from 1 to n (e.g., fixed 2, 3, 4?)
-            images = []
-            n_mem = 4
-            im_inds = []
-            
-            for i in range(K-n_mem): # K = clip length + 2(?)
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-                #print ('frame id: {}'.format(frame - i))
-            
-            for j in reversed(range(1, n_mem+1)):
-                ff = np.maximum(1, im_inds[-1] + 1 - 2) # 2 is the gap
-                images.append(cv2.imread(self.imagefile(v, ff )).astype(np.float32))
-                im_inds.append(ff-1)
-            
-            images.reverse() # time order: small to large
-            im_inds.reverse()
-            '''
-            
-            '''
-            # MOD: to enable long-range modeling
-            images = []
-            n_mem = K - 1
-            im_inds = []
-            for i in range(K-n_mem): # K = clip length + 2(?)
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-                #print ('frame id: {}'.format(frame - i))
-            
-            clip_lo = frame - (K-n_mem) + 1
-            mem_base = clip_lo // (n_mem+1) 
-            mem_residual = 0 # clip_lo % (n_mem+1)
-            for j in reversed(range(1, n_mem+1)):
-                images.append(cv2.imread(self.imagefile(v, mem_base * j + mem_residual)).astype(np.float32))
-                im_inds.append(mem_base * j + mem_residual - 1)
-                #print ('frame id: {}'.format(clip_lo // (n_mem+1) * j))
-            
-            '''
-            
-            '''
-            #final working SPARSE version
-            ### MOD: more extreme temporal augmentation? (goal: make training drop more slowly)
-            # basically: head and tail are fixed; the rest in order but don't care?
-            images = []
-            n_mem = K - 1
-            im_inds = []
-            for i in range(K-n_mem): 
-                images.append(cv2.imread(self.imagefile(v, frame - i)).astype(np.float32))
-                im_inds.append(frame - i - 1)
-                #print ('frame id: {}'.format(frame - i))
-            
-            cur_f = frame
-            #low_bound = np.maximum(cur_f - 30, 1)
-            low_bound = 1
-            for j in range(1, n_mem+1):
-                lookback = random.randint(1, (cur_f - low_bound) // (n_mem // 2) + 1)
-                cur_f = np.maximum(cur_f - lookback, 1)
-                images.append(cv2.imread(self.imagefile(v, cur_f)).astype(np.float32))
-                im_inds.append(cur_f - 1)
-            
-            #images.append(cv2.imread(self.imagefile(v, low_bound)).astype(np.float32))
-            #im_inds.append(low_bound - 1)
-            '''
             # fixed sparse
             images = []
             n_mem = K - 1
@@ -242,7 +133,7 @@ class Sampler(data.Dataset):
             low_bound = 1
             for _ in range(1, n_mem+1):
                 
-                cur_f = np.maximum(cur_f - self._ninputrgb + 1, 1) # +1: motion frames and rgb frame overlap by 1
+                cur_f = np.maximum(cur_f - self._ninputrgb, 1) # +1: motion frames and rgb frame overlap by 1
                 im_inds.append(cur_f - 1)
             
             for idx, i in enumerate(im_inds):
@@ -297,7 +188,7 @@ class Sampler(data.Dataset):
                     
                         im_inds_true = []
                         for ind in im_inds:
-                            im_inds_true.append(t[:,0].tolist().index(ind) + 1)
+                            im_inds_true.append(t[:,0].tolist().index(ind+1))
                         boxes = t[im_inds_true[-1*K:], 1:5]
                         
                     else: # MOD: when frames may not be continuous (single K + flow)

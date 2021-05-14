@@ -20,7 +20,7 @@ class BaseDataset(data.Dataset):
         with open(pkl_file, 'rb') as fid:
             pkl = pickle.load(fid, encoding='iso-8859-1')
         
-        
+        '''
         # Alpha:reduce training video set for faster concept proofing
         # in fact, having similar frames multiple times help to converge faster
         # hence, no need to reduce
@@ -39,7 +39,7 @@ class BaseDataset(data.Dataset):
             
             pkl['train_videos'][sp] = train_videos_reduced
             pkl['test_videos'][sp] = test_videos_reduced
-        
+        '''
         for k in pkl:
             setattr(self, ('_' if k != 'labels' else '') + k, pkl[k])
 
@@ -146,9 +146,9 @@ class BaseDataset(data.Dataset):
                         
             
             elif self.opt.rgb_model != '': # ninput == 1; hardcode gap == 5
-                for i in reversed(range(min(self.K * self.opt.ninputrgb - self.opt.ninputrgb + 1, self._nframes[v]), self._nframes[v] + 1)): # orig: self.K
+                for i in reversed(range(min(self.K * self.opt.ninputrgb, self._nframes[v]) - self.opt.ninputrgb + 1, self._nframes[v] + 1)): # orig: self.K
                  
-                    if tubelet_in_out_tubes(vtubes, i, -1*(min(self.K*self.opt.ninputrgb - self.opt.ninputrgb + 1 , self._nframes[v]))) and tubelet_has_gt(vtubes, i, -1*(min(self.K*self.opt.ninputrgb - self.opt.ninputrgb + 1, self._nframes[v]))):
+                    if tubelet_in_out_tubes(vtubes, i, -1*(min(self.K*self.opt.ninputrgb, self._nframes[v]) - self.opt.ninputrgb + 1)) and tubelet_has_gt(vtubes, i, -1*(min(self.K*self.opt.ninputrgb, self._nframes[v]) - self.opt.ninputrgb + 1)):
                         new_indices += [(v, i)]
                 
                  
