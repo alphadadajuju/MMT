@@ -28,7 +28,7 @@ class PA(nn.Module):
         
         self.n_length = n_length
         
-        self.relu = nn.ReLU(inplace=True)
+        #self.relu = nn.ReLU(inplace=True)
         #self.shallow_bn = nn.BatchNorm2d(8)
         
         for m in self.modules():

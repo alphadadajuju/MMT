@@ -137,8 +137,13 @@ class MOC_Branch_KwithM(nn.Module):
         ### explore non-local block briefly
         # clone input_chunk so that it does not distort the shrink layer?
         
-        #input_chunk = input_chunk.view(-1, cc, K, hh, ww) # reshaped for 3D non-local block 
-        input_chunk = self.nlb(input_chunk.view(-1, cc, K, hh, ww)).view(bbK, cc, hh, ww)
+        # reshaped for 3D non-local block  
+        # this may be incorrect too (n, c, t, h, w)
+        #input_chunk = self.nlb(input_chunk.view(-1, cc, K, hh, ww)).view(bbK, cc, hh, ww)
+        
+        input_chunk_ = input_chunk.view(-1, K, cc, hh, ww)
+        input_chunk_ = input_chunk_.transpose(1,2).contiguous()
+        input_chunk = self.nlb(input_chunk_).transpose(1,2).contiguous().view(bbK, cc, hh, ww) 
         
         # shrink ch by 8 for mov ?
         input_chunk_small = self.shrink(input_chunk)

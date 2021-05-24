@@ -39,6 +39,9 @@ def load_model(model, model_path, optimizer=None, lr=None, ucf_pretrain=False):
 
     # convert data_parallal to model
     for k in state_dict_:
+        if k == 'pa.relu.conv1_5.weight':
+            continue
+        
         if ucf_pretrain:
             if k.startswith('branch.hm') or k.startswith('branch.mov'):
                 continue
@@ -257,7 +260,8 @@ def load_coco_pretrained_model(opt, model):
         if opt.pa_fuse_mode == 'PAN': # concat rgb (3 ch) and motion (3 ch)
             convert2PAN(opt.ninput, model, conv_idx=1) # 3 -> 6 channels
         elif opt.pa_fuse_mode == 'TDN':
-            convert2TDN(opt.ninput, model, conv_idx=2) # 3 -> 6 channels
+            pass
+            #convert2TDN(opt.ninput, model, conv_idx=2) # 3 -> 6 channels
             
 
     return model

@@ -88,7 +88,8 @@ class MOCDetector(object):
                 self.pa_model = convert2PAN(opt.ninput, self.pa_model, conv_idx=1)
             
             elif opt.pa_fuse_mode == 'TDN':
-                self.pa_model = convert2TDN(opt.ninput, self.pa_model, conv_idx=2) # idx 1 or 2? does not matter here as trained weight would be loaded here?
+                pass
+                #self.pa_model = convert2TDN(opt.ninput, self.pa_model, conv_idx=2) # idx 1 or 2? does not matter here as trained weight would be loaded here?
             
             # Single PAN stream
             else:
